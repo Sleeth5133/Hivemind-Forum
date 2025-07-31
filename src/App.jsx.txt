@@ -1,0 +1,60 @@
+import { useState, useEffect } from 'react'
+import HiveGrid from './components/HiveGrid'
+import { signInWithEthereum } from './lib/web3'
+import gun from './lib/gun'
+import { rankThreads } from './lib/pheromone'
+
+function App() {
+  const [user, setUser] = useState(null)
+  const [threads, setThreads] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  // Fetch threads from GUN
+  useEffect(() => {
+    const listener = gun.get('threads').map().on((data, key) => {
+      const threadList = []
+      gun.get('threads').once((node) => {
+        Object.values(node).forEach(t => threadList.push(t))
+        setThreads(rankThreads(threadList))
+        setLoading(false)
+      })
+    })
+
+    return () => gun.get('threads').off(listener)
+  }, [])
+
+  const login = async () => {
+    const userData = await signInWithEthereum()
+    setUser(userData.address)
+  }
+
+  return (
+    <div className="min-h-screen">
+      {/* Header */}
+      <header className="bg-hive-amber text-white p-4 shadow-md">
+        <div className="container mx-auto flex justify-between items-center">
+          <h1 className="text-2xl font-bold">🐝 HiveMind</h1>
+          {user ? (
+            <span className="text-sm">Logged in as {user.slice(0, 8)}...</span>
+          ) : (
+            <button onClick={login} className="bg-white text-hive-amber px-4 py-2 rounded font-semibold hover:bg-hive-wax transition">
+              Join the Hive
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* Main */}
+      <main className="container mx-auto py-8">
+        <h2 className="text-xl font-semibold mb-6 text-center">The Hive</h2>
+        {loading ? (
+          <p className="text-center">🐝 Pollinating content...</p>
+        ) : (
+          <HiveGrid threads={threads} />
+        )}
+      </main>
+    </div>
+  )
+}
+
+export default App

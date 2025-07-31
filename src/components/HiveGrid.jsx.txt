@@ -1,0 +1,28 @@
+import ThreadCard from './ThreadCard'
+
+export default function HiveGrid({ threads }) {
+  return (
+    <div className="grid honeycomb gap-6 px-4">
+      {threads.length === 0 ? (
+        <p className="text-center col-span-full">No threads yet. Sow the first seed!</p>
+      ) : (
+        threads.map((thread) => (
+          <div
+            key={thread.id}
+            className="transform hover:scale-105 transition-all duration-200"
+            style={{
+              clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
+              background: thread.pheromone > 80 ? '#FFB300' : '#FFF8E1',
+              border: `1px solid ${thread.pheromone > 80 ? '#C2185B' : '#F57F17'}`,
+              padding: '16px',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+              transition: 'all 0.2s'
+            }}
+          >
+            <ThreadCard thread={thread} />
+          </div>
+        ))
+      )}
+    </div>
+  )
+}

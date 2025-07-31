@@ -1,0 +1,18 @@
+export default function ThreadCard({ thread }) {
+  return (
+    <div>
+      <h3 className="font-bold text-lg mb-1 leading-tight">{thread.title}</h3>
+      <p className="text-xs text-gray-600 mb-2">
+        by {thread.author.slice(0, 8)}... 🐝{thread.authorPollen || 0}
+      </p>
+      <p className="text-sm text-gray-700 mb-3 line-clamp-2">
+        {thread.content.substring(0, 100)}...
+      </p>
+      <div className="flex justify-between text-xs text-gray-500">
+        <span>💬 {thread.replies || 0}</span>
+        <span>🔥 {thread.pheromone?.toFixed(1)}</span>
+        <span⏱️ {Math.floor((Date.now() - thread.timestamp) / 60000)}m</span>
+      </div>
+    </div>
+  )
+}
